@@ -1,0 +1,17 @@
+src/magnolia-template-ramseyinhouse/assets/dist
+.settings*
+*.DS_Store
+*.sublime-*
+.idea*
+target*
+.classpath
+.project
+*.iml
+node*
+.vscode/
+yarn-error.log
+npm-debug.log
+.sass-cache
+.stylelintcache
+dist/
+.cache
