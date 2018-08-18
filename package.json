@@ -12,6 +12,7 @@
   ],
   "license": "MIT",
   "devDependencies": {
+    "autoprefixer": "^9.1.1",
     "husky": "^0.14.3",
     "kontra": "^4.0.1",
     "parcel-bundler": "^1.9.7",
