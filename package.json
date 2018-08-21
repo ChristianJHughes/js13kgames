@@ -27,5 +27,8 @@
   "prettier": {
     "arrowParens": "always",
     "singleQuote": true
+  },
+  "dependencies": {
+    "text": "^0.1.0"
   }
 }
