@@ -1,0 +1,27 @@
+/*
+  white: #e4e3e3
+  blue: #36518b
+  cream: #e8c3aa
+  green: #7da09f
+  light green: #adcfc8
+*/
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e4e3e3;
+}
+
+canvas {
+  box-shadow: #aaa 0 0 50px;
+  border-radius: 10px;
+  background: #fff;
+  padding: 5px;
+}
