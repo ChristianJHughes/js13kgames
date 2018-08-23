@@ -1,79 +1,74 @@
 import 'kontra/src/core';
-import 'kontra/src/sprite';
 import 'kontra/src/gameLoop';
-import 'kontra/src/pointer';
 import 'kontra/src/keyboard';
-import 'kontra/src/assets';
-import 'kontra/src/spriteSheet';
-import 'kontra/src/tileEngine';
-import text from './text/';
+import dictionary from './dictionary';
+import gameState from './game-state';
+import input from './utilities/input';
+import text from './utilities/text';
 
-const GAME_STATES = { playing: 0, won: 1, lost: 2 };
-let currentGameState = GAME_STATES.playing;
-let validLetters = 'a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z'.split(
-  ','
-);
-let textAlreadyTyped = '';
-let textLeftToType = 'watermelon';
-
-let checkWin = () => {
-  if (
-    textLeftToType === textAlreadyTyped &&
-    currentGameState === GAME_STATES.playing
-  ) {
-    currentGameState = GAME_STATES.won;
-  }
+const SCREEN_PADDING = {
+  minY: 50,
+  maxY: 595,
+  minX: 0,
+  maxX: 798
 };
 
-let initKeyboardInput = () => {
-  let keyCallback = ({ key }) => {
-    let nextCharToType = textLeftToType.replace(textAlreadyTyped, '').charAt(0);
+let textToType = dictionary.getParagraph(5);
+let textAlreadyTyped = '';
+let textTypedWrong = '';
+
+let initializeInput = () => {
+  let checkKeyCharacter = ({ key }) => {
+    let nextCharToType = textToType.replace(textAlreadyTyped, '').charAt(0);
     if (nextCharToType === key) {
       textAlreadyTyped += key;
-      checkWin();
+      textTypedWrong = '';
+      gameState.checkWinCondition(textToType === textAlreadyTyped);
+    } else {
+      textTypedWrong = nextCharToType;
     }
   };
-  validLetters.forEach((key) => {
-    kontra.keys.bind(key, keyCallback);
-  });
+  input.bindKeys(checkKeyCharacter);
 };
 
-let main = () => {
-  kontra.init();
-
-  initKeyboardInput();
-
-  let loop = kontra.gameLoop({
-    update: () => {},
-    render: () => {
-      // Game State Machine
-      switch (currentGameState) {
-        case GAME_STATES.playing:
-          text.drawText({ text: 'Type the text below to win:', x: 0, y: 25 });
-          text.drawText({ text: textLeftToType, x: 0, y: 75 });
-          text.drawText({ text: textAlreadyTyped, color: 'blue', x: 0, y: 75 });
-          break;
-        case GAME_STATES.won:
-          text.drawText({
-            text: 'You typed a word!',
-            color: 'green',
-            x: 0,
-            y: 25
-          });
-          break;
-        case GAME_STATES.lost:
-          text.drawText({
-            text: 'You lost!',
-            color: 'red',
-            x: 0,
-            y: 25
-          });
-          break;
-      }
+let renderState = () => {
+  gameState.stateMachine({
+    playingCallback: () => {
+      text.drawText({
+        text: 'Type the text below to win:',
+        x: SCREEN_PADDING.minX,
+        y: SCREEN_PADDING.minY
+      });
+      text.drawValidatedText(
+        textToType,
+        textAlreadyTyped,
+        textTypedWrong,
+        205,
+        120
+      );
+    },
+    lostCallback: () => {
+      text.drawText({
+        text: 'You lost!',
+        color: 'red',
+        x: 0,
+        y: SCREEN_PADDING.minY
+      });
     }
   });
-
-  loop.start();
 };
 
-main();
+let startGame = () => {
+  kontra.init();
+
+  initializeInput();
+
+  kontra
+    .gameLoop({
+      update: () => {},
+      render: () => renderState()
+    })
+    .start();
+};
+
+startGame();
