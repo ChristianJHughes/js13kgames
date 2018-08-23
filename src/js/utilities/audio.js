@@ -14,6 +14,5 @@ let playSound = (sound) => {
 };
 
 export default {
-  sounds,
   playSound
 };
