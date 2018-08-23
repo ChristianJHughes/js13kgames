@@ -1,23 +1,20 @@
-const GAME_STATES = { playing: 0, won: 1, lost: 2 };
+const GAME_STATES = { playing: 0, lost: 1 };
 
 let currentGameState = GAME_STATES.playing;
 
-let checkWinCondition = (condition) => {
+let checkLossCondition = (condition) => {
   if (currentGameState === GAME_STATES.playing && condition) {
-    currentGameState = GAME_STATES.won;
+    currentGameState = GAME_STATES.lost;
     return true;
   } else {
     return false;
   }
 };
 
-let stateMachine = ({ playingCallback, wonCallback, lostCallback }) => {
+let stateMachine = ({ playingCallback, lostCallback }) => {
   switch (currentGameState) {
     case GAME_STATES.playing:
       playingCallback();
-      break;
-    case GAME_STATES.won:
-      wonCallback();
       break;
     case GAME_STATES.lost:
       lostCallback();
@@ -26,6 +23,6 @@ let stateMachine = ({ playingCallback, wonCallback, lostCallback }) => {
 };
 
 export default {
-  checkWinCondition,
+  checkLossCondition,
   stateMachine
 };
