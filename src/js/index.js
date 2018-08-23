@@ -7,20 +7,25 @@ import input from './utilities/input';
 import text from './utilities/text';
 
 const SCREEN_PADDING = {
-  minY: 20,
+  minY: 50,
   maxY: 595,
   minX: 0,
   maxX: 798
 };
 
+let textToType = dictionary.getParagraph(5);
 let textAlreadyTyped = '';
-let textLeftToType = dictionary.getParagraph(5);
+let textTypedWrong = '';
 
 let initializeInput = () => {
   let checkKeyCharacter = ({ key }) => {
-    let nextCharToType = textLeftToType.replace(textAlreadyTyped, '').charAt(0);
+    let nextCharToType = textToType.replace(textAlreadyTyped, '').charAt(0);
     if (nextCharToType === key) {
       textAlreadyTyped += key;
+      textTypedWrong = '';
+      gameState.checkWinCondition(textToType === textAlreadyTyped);
+    } else {
+      textTypedWrong = nextCharToType;
     }
   };
   input.bindKeys(checkKeyCharacter);
@@ -41,13 +46,20 @@ let renderState = () => {
         x: SCREEN_PADDING.minX,
         y: 75
       });
+      text.drawValidatedText(
+        textToType,
+        textAlreadyTyped,
+        textTypedWrong,
+        205,
+        120
+      );
     },
     lostCallback: () => {
       text.drawText({
         text: 'You lost!',
         color: 'red',
         x: 0,
-        y: 25
+        y: SCREEN_PADDING.minY
       });
     }
   });

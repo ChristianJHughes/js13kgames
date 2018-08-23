@@ -1,34 +1,44 @@
-import 'kontra/src/core';
-
-let wrapText = ({ text, x, y }) => {
-  let canvas = kontra.canvas.getContext('2d');
-  let words = text.split(' ');
-  let line = '';
-  let currentY = y;
-
-  for (let i = 0; i < words.length; i++) {
-    let testLine = line + words[i] + ' ';
-    let lineWidth = canvas.measureText(testLine).width;
-
-    if (x + lineWidth > 798 && i > 0) {
-      canvas.fillText(line, x, currentY);
-      line = words[i] + ' ';
-      currentY += 24;
-    } else {
-      line = testLine;
-    }
-  }
-
-  canvas.fillText(line, x, currentY);
-};
-
 let drawText = ({ text, color, size, x, y }) => {
   let canvas = kontra.canvas.getContext('2d');
-  canvas.font = `${size || 24}px Arial`;
+  canvas.font = `${size || 48}px Courier New`;
   canvas.fillStyle = color || 'black';
-  wrapText({ text, x, y });
+  canvas.fillText(text, x, y);
+};
+
+let drawValidatedText = (
+  textToType,
+  textAlreadyTyped,
+  textTypedWrong,
+  xCoor,
+  yCoor
+) => {
+  let stringWidthOffset = 0;
+  let canvas = kontra.canvas.getContext('2d');
+  for (let i = 0; i < textToType.length; i++) {
+    drawText({
+      text: textToType.charAt(i),
+      x: xCoor + stringWidthOffset,
+      y: yCoor
+    });
+    drawText({
+      text: textAlreadyTyped.charAt(i),
+      color: 'blue',
+      x: xCoor + stringWidthOffset,
+      y: yCoor
+    });
+    if (textTypedWrong && i == textAlreadyTyped.length) {
+      drawText({
+        text: textTypedWrong,
+        color: 'red',
+        x: xCoor + stringWidthOffset,
+        y: yCoor
+      });
+    }
+    stringWidthOffset += canvas.measureText(textToType.charAt(i)).width;
+  }
 };
 
 export default {
-  drawText
+  drawText,
+  drawValidatedText
 };
