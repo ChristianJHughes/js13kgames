@@ -1,6 +1,7 @@
 import 'kontra/src/core';
 import 'kontra/src/gameLoop';
 import 'kontra/src/keyboard';
+import audio from './utilities/audio';
 import dictionary from './dictionary';
 import gameState from './game-state';
 import input from './utilities/input';
@@ -23,9 +24,10 @@ let initializeInput = () => {
     if (nextCharToType === key) {
       textAlreadyTyped += key;
       textTypedWrong = '';
-      gameState.checkWinCondition(textToType === textAlreadyTyped);
+      audio.playSound('success');
     } else {
       textTypedWrong = nextCharToType;
+      audio.playSound('error');
     }
   };
   input.bindKeys(checkKeyCharacter);
