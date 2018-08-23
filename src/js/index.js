@@ -39,13 +39,6 @@ let renderState = () => {
         x: SCREEN_PADDING.minX,
         y: SCREEN_PADDING.minY
       });
-      text.drawText({ text: textLeftToType, x: SCREEN_PADDING.minX, y: 75 });
-      text.drawText({
-        text: textAlreadyTyped,
-        color: 'blue',
-        x: SCREEN_PADDING.minX,
-        y: 75
-      });
       text.drawValidatedText(
         textToType,
         textAlreadyTyped,
