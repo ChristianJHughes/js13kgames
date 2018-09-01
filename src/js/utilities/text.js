@@ -1,8 +1,17 @@
-let drawText = ({ text, color, size, x, y }) => {
+let drawText = ({ text, color, size, x, y, align = 'left' }) => {
   let canvas = kontra.canvas.getContext('2d');
   canvas.font = `${size || 48}px Courier New`;
   canvas.fillStyle = color || 'black';
-  canvas.fillText(text, x, y);
+
+  if (align === 'left') {
+    canvas.fillText(text, x, y);
+  } else if (align === 'right') {
+    let width = canvas.measureText(text).width;
+    canvas.fillText(text, x - width, y);
+  } else if (align === 'center') {
+    let width = canvas.measureText(text).width;
+    canvas.fillText(text, x - width / 2, y);
+  }
 };
 
 let drawValidatedText = (
