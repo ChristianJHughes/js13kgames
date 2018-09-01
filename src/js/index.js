@@ -7,16 +7,34 @@ import gameState from './game-state';
 import input from './utilities/input';
 import text from './utilities/text';
 
-const SCREEN_PADDING = {
-  minY: 50,
-  maxY: 595,
-  minX: 0,
-  maxX: 798
+let getCurrentSeconds = () => Math.round(performance.now() / 1000);
+
+let getEstimatedTimeToType = (text) => Math.round(text.length / 2);
+
+let getEarnedScore = ({ estTime, startTime, text, mistakes }) => {
+  return Math.max(
+    0,
+    Math.round(
+      (estTime / (getCurrentSeconds() - startTime)) * text.length - mistakes * 2
+    )
+  );
 };
+
+const SCREEN_BOUNDS = {
+  minY: 40,
+  maxY: 1080,
+  minX: 0,
+  maxX: 1920
+};
+
+let score = 0;
 
 let postTemplate = dictionary.getParagraph(5);
 let postTypedCorrectly = '';
 let postTypedIncorrectly = '';
+let postMistakes = 0;
+let postStartTime = getCurrentSeconds(); // seconds
+let postEstimatedTimeToFinish = getEstimatedTimeToType(postTemplate);
 let completePosts = [];
 
 let initializeInput = () => {
@@ -28,11 +46,21 @@ let initializeInput = () => {
       audio.playSound('success');
 
       if (postTemplate === postTypedCorrectly) {
+        score += getEarnedScore({
+          estTime: postEstimatedTimeToFinish,
+          startTime: postStartTime,
+          text: postTemplate,
+          mistakes: postMistakes
+        });
         completePosts.unshift(postTypedCorrectly);
+        postStartTime = getCurrentSeconds();
         postTypedCorrectly = '';
+        postMistakes = 0;
         postTemplate = dictionary.getParagraph(5);
+        postEstimatedTimeToFinish = getEstimatedTimeToType(postTemplate);
       }
     } else {
+      postMistakes++;
       postTypedIncorrectly = nextCharToType;
       audio.playSound('error');
     }
@@ -45,8 +73,8 @@ let renderState = () => {
     playingCallback: () => {
       text.drawText({
         text: 'Type the text below to win:',
-        x: SCREEN_PADDING.minX,
-        y: SCREEN_PADDING.minY
+        x: SCREEN_BOUNDS.minX,
+        y: SCREEN_BOUNDS.minY
       });
       text.drawValidatedText(
         postTemplate,
@@ -55,6 +83,13 @@ let renderState = () => {
         205,
         120
       );
+      text.drawText({
+        text: `Score: ${score}`,
+        x: SCREEN_BOUNDS.maxX,
+        y: SCREEN_BOUNDS.minY,
+        color: 'green',
+        align: 'right'
+      });
       completePosts.map((item, index) => {
         text.drawText({
           text: item,
@@ -69,7 +104,7 @@ let renderState = () => {
         text: 'You lost!',
         color: 'red',
         x: 0,
-        y: SCREEN_PADDING.minY
+        y: SCREEN_BOUNDS.minY
       });
     }
   });
