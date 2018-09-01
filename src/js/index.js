@@ -46,18 +46,6 @@ let initializeInput = () => {
       audio.playSound('success');
 
       if (postTemplate === postTypedCorrectly) {
-        console.log(
-          `Post Length: ${
-            postTypedCorrectly.length
-          }\nMistakes: ${postMistakes}\nTime Started: ${postStartTime}\nEstimated Time To Finish: ${postEstimatedTimeToFinish}\nTime Taken: ${Math.round(
-            getCurrentSeconds() - postStartTime
-          )}\nScore From Post: ${getEarnedScore({
-            estTime: postEstimatedTimeToFinish,
-            startTime: postStartTime,
-            text: postTemplate,
-            mistakes: postMistakes
-          })}`
-        );
         score += getEarnedScore({
           estTime: postEstimatedTimeToFinish,
           startTime: postStartTime,
