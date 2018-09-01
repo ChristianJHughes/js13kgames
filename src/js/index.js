@@ -14,19 +14,26 @@ const SCREEN_PADDING = {
   maxX: 798
 };
 
-let textToType = dictionary.getParagraph(5);
-let textAlreadyTyped = '';
-let textTypedWrong = '';
+let postTemplate = dictionary.getParagraph(5);
+let postTypedCorrectly = '';
+let postTypedIncorrectly = '';
+let completePosts = [];
 
 let initializeInput = () => {
   let checkKeyCharacter = ({ key }) => {
-    let nextCharToType = textToType.replace(textAlreadyTyped, '').charAt(0);
+    let nextCharToType = postTemplate.replace(postTypedCorrectly, '').charAt(0);
     if (nextCharToType === key) {
-      textAlreadyTyped += key;
-      textTypedWrong = '';
+      postTypedCorrectly += key;
+      postTypedIncorrectly = '';
       audio.playSound('success');
+
+      if (postTemplate === postTypedCorrectly) {
+        completePosts.unshift(postTypedCorrectly);
+        postTypedCorrectly = '';
+        postTemplate = dictionary.getParagraph(5);
+      }
     } else {
-      textTypedWrong = nextCharToType;
+      postTypedIncorrectly = nextCharToType;
       audio.playSound('error');
     }
   };
@@ -42,12 +49,20 @@ let renderState = () => {
         y: SCREEN_PADDING.minY
       });
       text.drawValidatedText(
-        textToType,
-        textAlreadyTyped,
-        textTypedWrong,
+        postTemplate,
+        postTypedCorrectly,
+        postTypedIncorrectly,
         205,
         120
       );
+      completePosts.map((item, index) => {
+        text.drawText({
+          text: item,
+          x: 205,
+          y: 120 + 60 * (index + 1),
+          color: 'gray'
+        });
+      });
     },
     lostCallback: () => {
       text.drawText({
