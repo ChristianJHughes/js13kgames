@@ -113,8 +113,9 @@ let renderState = () => {
       text.drawText({
         text: 'You lost!',
         color: 'red',
-        x: 0,
-        y: SCREEN_BOUNDS.minY
+        x: 1920 / 2,
+        y: SCREEN_BOUNDS.minY,
+        align: 'center'
       });
     }
   });
@@ -128,9 +129,8 @@ let startGame = () => {
   kontra
     .gameLoop({
       update: () => {
-        if (selfEsteem > 0) {
-          selfEsteem -= 0.1;
-        }
+        gameState.checkLossCondition(selfEsteem <= 0);
+        selfEsteem -= 0.1;
       },
       render: () => renderState()
     })
