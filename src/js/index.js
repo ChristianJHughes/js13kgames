@@ -6,7 +6,7 @@ import dictionary from './dictionary';
 import gameState from './game-state';
 import input from './utilities/input';
 import text from './utilities/text';
-import shape from './utilities/shape';
+import ui from './ui';
 
 let getCurrentSeconds = () => Math.round(performance.now() / 1000);
 
@@ -19,13 +19,6 @@ let getEarnedScore = ({ estTime, startTime, text, mistakes }) => {
       (estTime / (getCurrentSeconds() - startTime)) * text.length - mistakes * 2
     )
   );
-};
-
-const SCREEN_BOUNDS = {
-  minY: 40,
-  maxY: 1080,
-  minX: 5,
-  maxX: 1915
 };
 
 let score = 0;
@@ -74,39 +67,20 @@ let initializeInput = () => {
 let renderState = () => {
   gameState.stateMachine({
     playingCallback: () => {
-      text.drawText({
-        text: 'Type the text below to win:',
-        x: SCREEN_BOUNDS.minX,
-        y: SCREEN_BOUNDS.minY
-      });
-      text.drawValidatedText(
-        postTemplate,
-        postTypedCorrectly,
-        postTypedIncorrectly,
-        205,
-        120
-      );
-      text.drawText({
-        text: `Score: ${score}`,
-        x: SCREEN_BOUNDS.maxX,
-        y: SCREEN_BOUNDS.minY,
-        color: 'green',
-        align: 'right'
-      });
       completePosts.map((item, index) => {
         text.drawText({
           text: item,
-          x: 205,
-          y: 120 + 60 * (index + 1),
+          x: 5,
+          y: 192 + 48 * (index + 1),
           color: 'gray'
         });
       });
-      shape.drawShape({
-        width: (SCREEN_BOUNDS.maxX / 100) * selfEsteem,
-        height: 10,
-        color: 'orange',
-        x: 0,
-        y: 0
+      text.drawValidatedText({
+        template: postTemplate,
+        correct: postTypedCorrectly,
+        incorrect: postTypedIncorrectly,
+        x: 5,
+        y: 192
       });
     },
     lostCallback: () => {
@@ -114,11 +88,26 @@ let renderState = () => {
         text: 'You lost!',
         color: 'red',
         x: 1920 / 2,
-        y: SCREEN_BOUNDS.minY,
+        y: 1080 / 2 - 50,
+        size: 100,
+        align: 'center'
+      });
+      text.drawText({
+        text: `Total Score: ${score}`,
+        x: 1920 / 2,
+        y: 1080 / 2 + 10,
+        align: 'center'
+      });
+      text.drawText({
+        text: 'Refresh to try again',
+        x: 1920 / 2,
+        y: 1080 / 2 + 52,
+        size: 32,
         align: 'center'
       });
     }
   });
+  ui.drawGameUi({ score, meter: selfEsteem });
 };
 
 let startGame = () => {
@@ -129,8 +118,13 @@ let startGame = () => {
   kontra
     .gameLoop({
       update: () => {
-        gameState.checkLossCondition(selfEsteem <= 0);
-        selfEsteem -= 0.1;
+        gameState.stateMachine({
+          playingCallback: () => {
+            gameState.checkLossCondition(selfEsteem <= 0);
+            selfEsteem -= 0.0833; // 5% per second
+          },
+          lostCallback: () => {}
+        });
       },
       render: () => renderState()
     })
