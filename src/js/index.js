@@ -57,7 +57,7 @@ let initializeInput = () => {
       }
     } else {
       postMistakes++;
-      postTypedIncorrectly = nextCharToType;
+      postTypedIncorrectly = nextCharToType === ' ' ? '_' : nextCharToType;
       audio.playSound('error');
     }
   };
