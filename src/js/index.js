@@ -6,6 +6,7 @@ import dictionary from './dictionary';
 import gameState from './game-state';
 import input from './utilities/input';
 import text from './utilities/text';
+import shape from './utilities/shape';
 
 let getCurrentSeconds = () => Math.round(performance.now() / 1000);
 
@@ -23,11 +24,12 @@ let getEarnedScore = ({ estTime, startTime, text, mistakes }) => {
 const SCREEN_BOUNDS = {
   minY: 40,
   maxY: 1080,
-  minX: 0,
-  maxX: 1920
+  minX: 5,
+  maxX: 1915
 };
 
 let score = 0;
+let selfEsteem = 100;
 
 let postTemplate = dictionary.getParagraph(5);
 let postTypedCorrectly = '';
@@ -58,6 +60,7 @@ let initializeInput = () => {
         postMistakes = 0;
         postTemplate = dictionary.getParagraph(5);
         postEstimatedTimeToFinish = getEstimatedTimeToType(postTemplate);
+        selfEsteem = 100;
       }
     } else {
       postMistakes++;
@@ -98,6 +101,13 @@ let renderState = () => {
           color: 'gray'
         });
       });
+      shape.drawShape({
+        width: (SCREEN_BOUNDS.maxX / 100) * selfEsteem,
+        height: 10,
+        color: 'orange',
+        x: 0,
+        y: 0
+      });
     },
     lostCallback: () => {
       text.drawText({
@@ -117,7 +127,11 @@ let startGame = () => {
 
   kontra
     .gameLoop({
-      update: () => {},
+      update: () => {
+        if (selfEsteem > 0) {
+          selfEsteem -= 0.1;
+        }
+      },
       render: () => renderState()
     })
     .start();
