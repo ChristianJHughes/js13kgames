@@ -110,6 +110,18 @@ let renderState = () => {
   ui.drawGameUi({ score, meter: selfEsteem });
 };
 
+let updateState = () => {
+  gameState.stateMachine({
+    playingCallback: () => {
+      gameState.checkLossCondition(selfEsteem <= 0);
+      selfEsteem -= 0.0833; // 5% per second
+    },
+    lostCallback: () => {
+      input.unBindKeys();
+    }
+  });
+};
+
 let startGame = () => {
   kontra.init();
 
@@ -117,15 +129,7 @@ let startGame = () => {
 
   kontra
     .gameLoop({
-      update: () => {
-        gameState.stateMachine({
-          playingCallback: () => {
-            gameState.checkLossCondition(selfEsteem <= 0);
-            selfEsteem -= 0.0833; // 5% per second
-          },
-          lostCallback: () => {}
-        });
-      },
+      update: () => updateState(),
       render: () => renderState()
     })
     .start();

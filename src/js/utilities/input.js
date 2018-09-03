@@ -1,4 +1,4 @@
-const validLetters = [
+const validKeys = [
   'a',
   'b',
   'c',
@@ -34,8 +34,11 @@ document.addEventListener(
 );
 
 let bindKeys = (callback) =>
-  validLetters.forEach((key) => kontra.keys.bind(key, callback));
+  validKeys.forEach((key) => kontra.keys.bind(key, callback));
+
+let unBindKeys = () => kontra.keys.unbind(validKeys);
 
 export default {
-  bindKeys
+  bindKeys,
+  unBindKeys
 };
