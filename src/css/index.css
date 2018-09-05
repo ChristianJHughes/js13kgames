@@ -14,12 +14,11 @@ body {
 
 canvas {
   background: #fff;
-  padding: 5px;
   width: 1200px;
 }
 
 .browser-mockup {
-  max-width: 1210px;
+  max-width: 1200px;
   border-top: 2em solid rgba(230, 230, 230, 0.7);
   box-shadow: 0 0.1em 1em 0 rgba(0, 0, 0, 0.4);
   position: relative;

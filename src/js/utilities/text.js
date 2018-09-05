@@ -14,36 +14,33 @@ let drawText = ({ text, color, size, x, y, align = 'left' }) => {
   }
 };
 
-let drawValidatedText = (
-  textToType,
-  textAlreadyTyped,
-  textTypedWrong,
-  xCoor,
-  yCoor
-) => {
+let drawValidatedText = ({ template, correct, incorrect, x, y, align }) => {
   let stringWidthOffset = 0;
   let canvas = kontra.canvas.getContext('2d');
-  for (let i = 0; i < textToType.length; i++) {
+  for (let i = 0; i < template.length; i++) {
     drawText({
-      text: textToType.charAt(i),
-      x: xCoor + stringWidthOffset,
-      y: yCoor
+      text: template.charAt(i),
+      x: x + stringWidthOffset,
+      y,
+      align
     });
     drawText({
-      text: textAlreadyTyped.charAt(i),
+      text: correct.charAt(i),
       color: 'blue',
-      x: xCoor + stringWidthOffset,
-      y: yCoor
+      x: x + stringWidthOffset,
+      y,
+      align
     });
-    if (textTypedWrong && i == textAlreadyTyped.length) {
+    if (incorrect && i == correct.length) {
       drawText({
-        text: textTypedWrong,
+        text: incorrect,
         color: 'red',
-        x: xCoor + stringWidthOffset,
-        y: yCoor
+        x: x + stringWidthOffset,
+        y,
+        align
       });
     }
-    stringWidthOffset += canvas.measureText(textToType.charAt(i)).width;
+    stringWidthOffset += canvas.measureText(template.charAt(i)).width;
   }
 };
 
