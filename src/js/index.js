@@ -21,16 +21,28 @@ let getEarnedScore = ({ estTime, startTime, text, mistakes }) => {
   );
 };
 
-let score = 0;
-let selfEsteem = 100;
+let score;
+let selfEsteem;
 
-let postTemplate = dictionary.getParagraph(5);
-let postTypedCorrectly = '';
-let postTypedIncorrectly = '';
-let postMistakes = 0;
-let postStartTime = getCurrentSeconds(); // seconds
-let postEstimatedTimeToFinish = getEstimatedTimeToType(postTemplate);
-let completePosts = [];
+let postTemplate;
+let postTypedCorrectly;
+let postTypedIncorrectly;
+let postMistakes;
+let postStartTime; // seconds
+let postEstimatedTimeToFinish;
+let completePosts;
+
+let initializeGameData = () => {
+  score = 0;
+  selfEsteem = 100;
+  postTemplate = dictionary.getParagraph(5);
+  postTypedCorrectly = '';
+  postTypedIncorrectly = '';
+  postMistakes = 0;
+  postStartTime = getCurrentSeconds(); // seconds
+  postEstimatedTimeToFinish = getEstimatedTimeToType(postTemplate);
+  completePosts = [];
+};
 
 let initializeInput = () => {
   let checkKeyCharacter = ({ key }) => {
@@ -99,11 +111,17 @@ let renderState = () => {
         align: 'center'
       });
       text.drawText({
-        text: 'Refresh to try again',
+        text: 'Press enter to try again',
         x: 1920 / 2,
         y: 1080 / 2 + 52,
         size: 32,
         align: 'center'
+      });
+      kontra.keys.bind('enter', () => {
+        kontra.keys.unbind('enter');
+        initializeGameData();
+        initializeInput();
+        gameState.setGameState('playing');
       });
     }
   });
@@ -125,6 +143,7 @@ let updateState = () => {
 let startGame = () => {
   kontra.init();
 
+  initializeGameData();
   initializeInput();
 
   kontra

@@ -2,6 +2,10 @@ const GAME_STATES = { playing: 0, lost: 1 };
 
 let currentGameState = GAME_STATES.playing;
 
+let setGameState = (state) => {
+  currentGameState = GAME_STATES[state];
+};
+
 let checkLossCondition = (condition) => {
   if (currentGameState === GAME_STATES.playing && condition) {
     currentGameState = GAME_STATES.lost;
@@ -23,6 +27,7 @@ let stateMachine = ({ playingCallback, lostCallback }) => {
 };
 
 export default {
+  setGameState,
   checkLossCondition,
   stateMachine
 };
