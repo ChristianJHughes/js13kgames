@@ -105,9 +105,7 @@ let getParagraph = (length) => {
   let paragraph = [];
 
   for (let i = 0; i < length; i++) {
-    paragraph.push(
-      dictionary[Math.round(Math.random() * dictionary.length) - 1]
-    );
+    paragraph.push(dictionary[Math.floor(Math.random() * dictionary.length)]);
   }
   return paragraph.join(' ');
 };
