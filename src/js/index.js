@@ -171,6 +171,8 @@ let updateState = () => {
     startCallback: () => {
       kontra.keys.bind('enter', () => {
         kontra.keys.unbind('enter');
+        initializeGameData();
+        initializeInput();
         gameState.setGameState('playing');
       });
     },
