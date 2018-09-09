@@ -63,7 +63,9 @@ let initializeInput = () => {
         postStartTime = getCurrentSeconds();
         postTypedCorrectly = '';
         postMistakes = 0;
-        postTemplate = dictionary.getParagraph(5);
+        postTemplate = dictionary.getParagraph(
+          6 + Math.floor(completePosts.length / 3) * 1
+        );
         postEstimatedTimeToFinish = getEstimatedTimeToType(postTemplate);
         selfEsteem = 100;
       }
@@ -71,6 +73,7 @@ let initializeInput = () => {
       postMistakes++;
       postTypedIncorrectly = nextCharToType === ' ' ? '_' : nextCharToType;
       audio.playSound('error');
+      if (selfEsteem > 3) selfEsteem -= 3;
     }
   };
   input.bindKeys(checkKeyCharacter);
@@ -155,7 +158,7 @@ let updateState = () => {
     },
     playingCallback: () => {
       gameState.checkLossCondition(selfEsteem <= 0);
-      selfEsteem -= 0.0833; // 5% per second
+      if (selfEsteem > 0) selfEsteem -= 0.0833; // 5% per second
     },
     lostCallback: () => {
       kontra.keys.bind('enter', () => {
