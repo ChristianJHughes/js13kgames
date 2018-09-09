@@ -27,8 +27,10 @@ let selfEsteem;
 let postTemplate;
 let postTypedCorrectly;
 let postTypedIncorrectly;
+let previousPostMistakes;
 let postMistakes;
 let postStartTime; // seconds
+let previousPostDuration;
 let postEstimatedTimeToFinish;
 let completePosts;
 
@@ -38,8 +40,10 @@ let initializeGameData = () => {
   postTemplate = dictionary.getParagraph(5);
   postTypedCorrectly = '';
   postTypedIncorrectly = '';
+  previousPostMistakes = 0;
   postMistakes = 0;
   postStartTime = getCurrentSeconds(); // seconds
+  previousPostDuration = 0;
   postEstimatedTimeToFinish = getEstimatedTimeToType(postTemplate);
   completePosts = [];
 };
@@ -60,8 +64,10 @@ let initializeInput = () => {
           mistakes: postMistakes
         });
         completePosts.unshift(postTypedCorrectly);
+        previousPostDuration = Math.ceil(getCurrentSeconds() - postStartTime);
         postStartTime = getCurrentSeconds();
         postTypedCorrectly = '';
+        previousPostMistakes = postMistakes;
         postMistakes = 0;
         postTemplate = dictionary.getParagraph(
           6 + Math.floor(completePosts.length / 3) * 1
@@ -83,11 +89,11 @@ let renderState = () => {
   gameState.stateMachine({
     startCallback: () => {
       text.drawText({
-        text: 'Welcome',
+        text: 'Offline: A Social Media Experience',
         color: 'red',
         x: 1920 / 2,
         y: 1080 / 2 - 50,
-        size: 100,
+        size: 90,
         align: 'center'
       });
       text.drawText({
@@ -119,6 +125,18 @@ let renderState = () => {
         incorrect: postTypedIncorrectly,
         x: 5,
         y: 192
+      });
+      if (previousPostDuration) {
+        text.drawPostStatus({
+          mistakes: previousPostMistakes,
+          x: 1350,
+          y: 125
+        });
+      }
+      text.drawMistakes({
+        mistakes: postMistakes,
+        x: 5,
+        y: 125
       });
     },
     lostCallback: () => {
