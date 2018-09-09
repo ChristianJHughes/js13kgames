@@ -1,6 +1,6 @@
-const GAME_STATES = { playing: 0, lost: 1 };
+const GAME_STATES = { start: -1, playing: 0, lost: 1 };
 
-let currentGameState = GAME_STATES.playing;
+let currentGameState = GAME_STATES.start;
 
 let setGameState = (state) => {
   currentGameState = GAME_STATES[state];
@@ -15,8 +15,11 @@ let checkLossCondition = (condition) => {
   }
 };
 
-let stateMachine = ({ playingCallback, lostCallback }) => {
+let stateMachine = ({ startCallback, playingCallback, lostCallback }) => {
   switch (currentGameState) {
+    case GAME_STATES.start:
+      startCallback();
+      break;
     case GAME_STATES.playing:
       playingCallback();
       break;

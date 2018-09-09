@@ -78,6 +78,29 @@ let initializeInput = () => {
 
 let renderState = () => {
   gameState.stateMachine({
+    startCallback: () => {
+      text.drawText({
+        text: 'Welcome',
+        color: 'red',
+        x: 1920 / 2,
+        y: 1080 / 2 - 50,
+        size: 100,
+        align: 'center'
+      });
+      text.drawText({
+        text: `Type posts quickly to increase your ever waning self-esteem.`,
+        x: 1920 / 2,
+        y: 1080 / 2 + 10,
+        align: 'center'
+      });
+      text.drawText({
+        text: 'Press enter to start',
+        x: 1920 / 2,
+        y: 1080 / 2 + 52,
+        size: 32,
+        align: 'center'
+      });
+    },
     playingCallback: () => {
       completePosts.map((item, index) => {
         text.drawText({
@@ -117,12 +140,6 @@ let renderState = () => {
         size: 32,
         align: 'center'
       });
-      kontra.keys.bind('enter', () => {
-        kontra.keys.unbind('enter');
-        initializeGameData();
-        initializeInput();
-        gameState.setGameState('playing');
-      });
     }
   });
   ui.drawGameUi({ score, meter: selfEsteem });
@@ -130,12 +147,23 @@ let renderState = () => {
 
 let updateState = () => {
   gameState.stateMachine({
+    startCallback: () => {
+      kontra.keys.bind('enter', () => {
+        kontra.keys.unbind('enter');
+        gameState.setGameState('playing');
+      });
+    },
     playingCallback: () => {
       gameState.checkLossCondition(selfEsteem <= 0);
       selfEsteem -= 0.0833; // 5% per second
     },
     lostCallback: () => {
-      input.unBindKeys();
+      kontra.keys.bind('enter', () => {
+        kontra.keys.unbind('enter');
+        initializeGameData();
+        initializeInput();
+        gameState.setGameState('playing');
+      });
     }
   });
 };
