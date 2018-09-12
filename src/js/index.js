@@ -181,6 +181,7 @@ let updateState = () => {
       if (selfEsteem > 0) selfEsteem -= 0.0833; // 5% per second
     },
     lostCallback: () => {
+      input.unBindKeys();
       kontra.keys.bind('enter', () => {
         kontra.keys.unbind('enter');
         initializeGameData();
@@ -195,7 +196,6 @@ let startGame = () => {
   kontra.init();
 
   initializeGameData();
-  initializeInput();
 
   kontra
     .gameLoop({
