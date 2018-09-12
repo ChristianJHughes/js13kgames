@@ -14,34 +14,56 @@ let drawText = ({ text, color, size, x, y, align = 'left' }) => {
   }
 };
 
-let drawValidatedText = ({ template, correct, incorrect, x, y, align }) => {
-  let stringWidthOffset = 0;
+let drawWrappedText = ({ template, correct, incorrect, x, y, hWidth }) => {
   let canvas = kontra.canvas.getContext('2d');
-  for (let i = 0; i < template.length; i++) {
-    drawText({
-      text: template.charAt(i),
-      x: x + stringWidthOffset,
-      y,
-      align
-    });
-    drawText({
-      text: correct.charAt(i),
-      color: 'blue',
-      x: x + stringWidthOffset,
-      y,
-      align
-    });
-    if (incorrect && i == correct.length) {
-      drawText({
-        text: incorrect,
-        color: 'red',
-        x: x + stringWidthOffset,
-        y,
-        align
-      });
+  let stringWidthOffset = 0;
+  let stringHeightOffset = 48;
+  let correctWords = correct.split(' ');
+  let words = template.split(' ').map((item, index) => ({
+    template: item + ' ',
+    correct: correctWords[index] ? correctWords[index] : '',
+    incorrect: index === correctWords.length - 1 ? incorrect : ''
+  }));
+
+  words.map((item) => {
+    if (canvas.measureText(item.template).width + stringWidthOffset > hWidth) {
+      stringWidthOffset = 0;
+      stringHeightOffset += 48;
     }
-    stringWidthOffset += canvas.measureText(template.charAt(i)).width;
-  }
+    for (let i = 0; i < item.template.length; i++) {
+      drawText({
+        text: item.template.charAt(i),
+        x: x + stringWidthOffset,
+        y: y + stringHeightOffset
+      });
+      drawText({
+        text: item.correct.charAt(i),
+        color: 'blue',
+        x: x + stringWidthOffset,
+        y: y + stringHeightOffset
+      });
+      if (incorrect && i == item.correct.length) {
+        drawText({
+          text: item.incorrect,
+          color: 'red',
+          x: x + stringWidthOffset,
+          y: y + stringHeightOffset
+        });
+      }
+      stringWidthOffset += canvas.measureText(item.template.charAt(i)).width;
+    }
+  });
+};
+
+let drawValidatedText = ({ template, correct, incorrect, x, y, align }) => {
+  drawWrappedText({
+    template,
+    correct,
+    incorrect,
+    x,
+    y,
+    hWidth: 1920
+  });
 };
 
 let drawPostStatus = ({ mistakes, x, y }) => {

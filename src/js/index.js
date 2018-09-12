@@ -37,7 +37,7 @@ let completePosts;
 let initializeGameData = () => {
   score = 0;
   selfEsteem = 100;
-  postTemplate = dictionary.getParagraph(5);
+  postTemplate = dictionary.getParagraph(15);
   postTypedCorrectly = '';
   postTypedIncorrectly = '';
   previousPostMistakes = 0;
@@ -70,7 +70,7 @@ let initializeInput = () => {
         previousPostMistakes = postMistakes;
         postMistakes = 0;
         postTemplate = dictionary.getParagraph(
-          6 + Math.floor(completePosts.length / 3) * 1
+          9 + Math.floor(completePosts.length / 3) * 1
         );
         postEstimatedTimeToFinish = getEstimatedTimeToType(postTemplate);
         selfEsteem = 100;
