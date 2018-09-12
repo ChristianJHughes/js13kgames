@@ -27,8 +27,10 @@ let selfEsteem;
 let postTemplate;
 let postTypedCorrectly;
 let postTypedIncorrectly;
+let previousPostMistakes;
 let postMistakes;
 let postStartTime; // seconds
+let previousPostDuration;
 let postEstimatedTimeToFinish;
 let completePosts;
 
@@ -38,8 +40,10 @@ let initializeGameData = () => {
   postTemplate = dictionary.getParagraph(5);
   postTypedCorrectly = '';
   postTypedIncorrectly = '';
+  previousPostMistakes = 0;
   postMistakes = 0;
   postStartTime = getCurrentSeconds(); // seconds
+  previousPostDuration = 0;
   postEstimatedTimeToFinish = getEstimatedTimeToType(postTemplate);
   completePosts = [];
 };
@@ -60,10 +64,14 @@ let initializeInput = () => {
           mistakes: postMistakes
         });
         completePosts.unshift(postTypedCorrectly);
+        previousPostDuration = Math.ceil(getCurrentSeconds() - postStartTime);
         postStartTime = getCurrentSeconds();
         postTypedCorrectly = '';
+        previousPostMistakes = postMistakes;
         postMistakes = 0;
-        postTemplate = dictionary.getParagraph(5);
+        postTemplate = dictionary.getParagraph(
+          6 + Math.floor(completePosts.length / 3) * 1
+        );
         postEstimatedTimeToFinish = getEstimatedTimeToType(postTemplate);
         selfEsteem = 100;
       }
@@ -71,6 +79,7 @@ let initializeInput = () => {
       postMistakes++;
       postTypedIncorrectly = nextCharToType === ' ' ? '_' : nextCharToType;
       audio.playSound('error');
+      if (selfEsteem > 3) selfEsteem -= 3;
     }
   };
   input.bindKeys(checkKeyCharacter);
@@ -78,6 +87,29 @@ let initializeInput = () => {
 
 let renderState = () => {
   gameState.stateMachine({
+    startCallback: () => {
+      text.drawText({
+        text: 'Offline: A Social Media Experience',
+        color: 'red',
+        x: 1920 / 2,
+        y: 1080 / 2 - 50,
+        size: 90,
+        align: 'center'
+      });
+      text.drawText({
+        text: `Type posts quickly to increase your ever waning self-esteem.`,
+        x: 1920 / 2,
+        y: 1080 / 2 + 10,
+        align: 'center'
+      });
+      text.drawText({
+        text: 'Press enter to start',
+        x: 1920 / 2,
+        y: 1080 / 2 + 52,
+        size: 32,
+        align: 'center'
+      });
+    },
     playingCallback: () => {
       completePosts.map((item, index) => {
         text.drawText({
@@ -93,6 +125,18 @@ let renderState = () => {
         incorrect: postTypedIncorrectly,
         x: 5,
         y: 192
+      });
+      if (previousPostDuration) {
+        text.drawPostStatus({
+          mistakes: previousPostMistakes,
+          x: 1350,
+          y: 125
+        });
+      }
+      text.drawMistakes({
+        mistakes: postMistakes,
+        x: 5,
+        y: 125
       });
     },
     lostCallback: () => {
@@ -117,12 +161,6 @@ let renderState = () => {
         size: 32,
         align: 'center'
       });
-      kontra.keys.bind('enter', () => {
-        kontra.keys.unbind('enter');
-        initializeGameData();
-        initializeInput();
-        gameState.setGameState('playing');
-      });
     }
   });
   ui.drawGameUi({ score, meter: selfEsteem });
@@ -130,12 +168,25 @@ let renderState = () => {
 
 let updateState = () => {
   gameState.stateMachine({
+    startCallback: () => {
+      kontra.keys.bind('enter', () => {
+        kontra.keys.unbind('enter');
+        initializeGameData();
+        initializeInput();
+        gameState.setGameState('playing');
+      });
+    },
     playingCallback: () => {
       gameState.checkLossCondition(selfEsteem <= 0);
-      selfEsteem -= 0.0833; // 5% per second
+      if (selfEsteem > 0) selfEsteem -= 0.0833; // 5% per second
     },
     lostCallback: () => {
-      input.unBindKeys();
+      kontra.keys.bind('enter', () => {
+        kontra.keys.unbind('enter');
+        initializeGameData();
+        initializeInput();
+        gameState.setGameState('playing');
+      });
     }
   });
 };
