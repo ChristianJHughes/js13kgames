@@ -45,43 +45,30 @@ let drawValidatedText = ({ template, correct, incorrect, x, y, align }) => {
 };
 
 let drawPostStatus = ({ mistakes, x, y }) => {
+  let text = '';
+
   switch (mistakes) {
     case 0:
-      drawText({
-        text: 'Perfect Post!',
-        color: 'blue',
-        size: 32,
-        x: x,
-        y: y
-      });
+      text = 'Perfect Post!';
       break;
     case 1 || 2:
-      drawText({
-        text: 'That was almost perfect...',
-        color: 'blue',
-        size: 32,
-        x: x,
-        y: y
-      });
+      text = 'That was almost perfect...';
       break;
     case 3:
-      drawText({
-        text: 'You are pretty bad.',
-        color: 'blue',
-        size: 32,
-        x: x,
-        y: y
-      });
+      text = 'You are pretty bad.';
       break;
     default:
-      drawText({
-        text: 'You are literally garbage.',
-        color: 'blue',
-        size: 32,
-        x: x,
-        y: y
-      });
+      text = 'You are literally garbage.';
   }
+
+  drawText({
+    text,
+    color: 'blue',
+    size: 32,
+    x: x,
+    y: y,
+    align: 'right'
+  });
 };
 
 let drawMistakes = ({ mistakes, x, y }) => {

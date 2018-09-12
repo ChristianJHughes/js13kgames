@@ -129,7 +129,7 @@ let renderState = () => {
       if (previousPostDuration) {
         text.drawPostStatus({
           mistakes: previousPostMistakes,
-          x: 1350,
+          x: 1920,
           y: 125
         });
       }
