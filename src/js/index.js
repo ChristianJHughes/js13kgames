@@ -112,8 +112,8 @@ let renderState = () => {
     },
     playingCallback: () => {
       completePosts.map((item, index) => {
-        text.drawText({
-          text: item,
+        text.drawWrappedText({
+          template: item,
           x: 5,
           y: 192 + 48 * (index + 1),
           color: 'gray'

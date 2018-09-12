@@ -14,10 +14,8 @@ let drawText = ({ text, color, size, x, y, align = 'left' }) => {
   }
 };
 
-let drawWrappedText = ({ template, correct, incorrect, x, y, hWidth }) => {
+let drawWrappedText = ({ template, correct = '', incorrect = '', x, y }) => {
   let canvas = kontra.canvas.getContext('2d');
-  let stringWidthOffset = 0;
-  let stringHeightOffset = 48;
   let correctWords = correct.split(' ');
   let words = template.split(' ').map((item, index) => ({
     template: item + ' ',
@@ -26,36 +24,50 @@ let drawWrappedText = ({ template, correct, incorrect, x, y, hWidth }) => {
   }));
 
   words.map((item) => {
-    if (canvas.measureText(item.template).width + stringWidthOffset > hWidth) {
-      stringWidthOffset = 0;
-      stringHeightOffset += 48;
+    if (canvas.measureText(item.template).width + x > 1920) {
+      x = 0;
+      y += 48;
     }
-    for (let i = 0; i < item.template.length; i++) {
-      drawText({
-        text: item.template.charAt(i),
-        x: x + stringWidthOffset,
-        y: y + stringHeightOffset
-      });
-      drawText({
-        text: item.correct.charAt(i),
-        color: 'blue',
-        x: x + stringWidthOffset,
-        y: y + stringHeightOffset
-      });
-      if (incorrect && i == item.correct.length) {
-        drawText({
-          text: item.incorrect,
-          color: 'red',
-          x: x + stringWidthOffset,
-          y: y + stringHeightOffset
-        });
-      }
-      stringWidthOffset += canvas.measureText(item.template.charAt(i)).width;
-    }
+    drawValidatedWord({
+      template: item.template,
+      correct: item.correct,
+      incorrect: item.incorrect,
+      x,
+      y
+    });
+    x += canvas.measureText(item.template).width;
   });
 };
 
-let drawValidatedText = ({ template, correct, incorrect, x, y, align }) => {
+let drawValidatedWord = ({ template, correct, incorrect, x, y }) => {
+  let canvas = kontra.canvas.getContext('2d');
+  let xOffset = 0;
+
+  for (let i = 0; i < template.length; i++) {
+    drawText({
+      text: template.charAt(i),
+      x: x + xOffset,
+      y: y
+    });
+    drawText({
+      text: correct.charAt(i),
+      color: 'blue',
+      x: x + xOffset,
+      y: y
+    });
+    if (incorrect && i == correct.length) {
+      drawText({
+        text: incorrect,
+        color: 'red',
+        x: x + xOffset,
+        y: y
+      });
+    }
+    xOffset += canvas.measureText(template.charAt(i)).width;
+  }
+};
+
+let drawValidatedText = ({ template, correct, incorrect, x, y }) => {
   drawWrappedText({
     template,
     correct,
@@ -104,8 +116,9 @@ let drawMistakes = ({ mistakes, x, y }) => {
 };
 
 export default {
+  drawMistakes,
+  drawPostStatus,
   drawText,
   drawValidatedText,
-  drawPostStatus,
-  drawMistakes
+  drawWrappedText
 };
