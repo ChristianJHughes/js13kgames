@@ -14,74 +14,95 @@ let drawText = ({ text, color, size, x, y, align = 'left' }) => {
   }
 };
 
-let drawValidatedText = ({ template, correct, incorrect, x, y, align }) => {
-  let stringWidthOffset = 0;
+let drawWrappedText = ({ template, correct = '', incorrect = '', x, y }) => {
   let canvas = kontra.canvas.getContext('2d');
+  let correctWords = correct.split(' ');
+  let words = template.split(' ').map((item, index) => ({
+    template: item + ' ',
+    correct: correctWords[index] ? correctWords[index] : '',
+    incorrect: index === correctWords.length - 1 ? incorrect : ''
+  }));
+
+  words.map((item) => {
+    if (canvas.measureText(item.template).width + x > 1920) {
+      x = 0;
+      y += 48;
+    }
+    drawValidatedWord({
+      template: item.template,
+      correct: item.correct,
+      incorrect: item.incorrect,
+      x,
+      y
+    });
+    x += canvas.measureText(item.template).width;
+  });
+};
+
+let drawValidatedWord = ({ template, correct, incorrect, x, y }) => {
+  let canvas = kontra.canvas.getContext('2d');
+  let xOffset = 0;
+
   for (let i = 0; i < template.length; i++) {
     drawText({
       text: template.charAt(i),
-      x: x + stringWidthOffset,
-      y,
-      align
+      x: x + xOffset,
+      y: y
     });
     drawText({
       text: correct.charAt(i),
       color: 'blue',
-      x: x + stringWidthOffset,
-      y,
-      align
+      x: x + xOffset,
+      y: y
     });
     if (incorrect && i == correct.length) {
       drawText({
         text: incorrect,
         color: 'red',
-        x: x + stringWidthOffset,
-        y,
-        align
+        x: x + xOffset,
+        y: y
       });
     }
-    stringWidthOffset += canvas.measureText(template.charAt(i)).width;
+    xOffset += canvas.measureText(template.charAt(i)).width;
   }
 };
 
+let drawValidatedText = ({ template, correct, incorrect, x, y }) => {
+  drawWrappedText({
+    template,
+    correct,
+    incorrect,
+    x,
+    y,
+    hWidth: 1920
+  });
+};
+
 let drawPostStatus = ({ mistakes, x, y }) => {
+  let text = '';
+
   switch (mistakes) {
     case 0:
-      drawText({
-        text: 'Perfect Post!',
-        color: 'blue',
-        size: 32,
-        x: x,
-        y: y
-      });
+      text = 'Perfect Post!';
       break;
     case 1 || 2:
-      drawText({
-        text: 'That was almost perfect...',
-        color: 'blue',
-        size: 32,
-        x: x,
-        y: y
-      });
+      text = 'That was almost perfect...';
       break;
     case 3:
-      drawText({
-        text: 'You are pretty bad.',
-        color: 'blue',
-        size: 32,
-        x: x,
-        y: y
-      });
+      text = 'You are pretty bad.';
       break;
     default:
-      drawText({
-        text: 'You are literally garbage.',
-        color: 'blue',
-        size: 32,
-        x: x,
-        y: y
-      });
+      text = 'You are literally garbage.';
   }
+
+  drawText({
+    text,
+    color: 'blue',
+    size: 32,
+    x: x,
+    y: y,
+    align: 'right'
+  });
 };
 
 let drawMistakes = ({ mistakes, x, y }) => {
@@ -95,8 +116,9 @@ let drawMistakes = ({ mistakes, x, y }) => {
 };
 
 export default {
+  drawMistakes,
+  drawPostStatus,
   drawText,
   drawValidatedText,
-  drawPostStatus,
-  drawMistakes
+  drawWrappedText
 };

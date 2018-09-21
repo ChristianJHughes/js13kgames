@@ -37,7 +37,7 @@ let completePosts;
 let initializeGameData = () => {
   score = 0;
   selfEsteem = 100;
-  postTemplate = dictionary.getParagraph(5);
+  postTemplate = dictionary.getParagraph(15);
   postTypedCorrectly = '';
   postTypedIncorrectly = '';
   previousPostMistakes = 0;
@@ -70,7 +70,7 @@ let initializeInput = () => {
         previousPostMistakes = postMistakes;
         postMistakes = 0;
         postTemplate = dictionary.getParagraph(
-          6 + Math.floor(completePosts.length / 3) * 1
+          9 + Math.floor(completePosts.length / 3) * 1
         );
         postEstimatedTimeToFinish = getEstimatedTimeToType(postTemplate);
         selfEsteem = 100;
@@ -112,8 +112,8 @@ let renderState = () => {
     },
     playingCallback: () => {
       completePosts.map((item, index) => {
-        text.drawText({
-          text: item,
+        text.drawWrappedText({
+          template: item,
           x: 5,
           y: 192 + 48 * (index + 1),
           color: 'gray'
@@ -129,7 +129,7 @@ let renderState = () => {
       if (previousPostDuration) {
         text.drawPostStatus({
           mistakes: previousPostMistakes,
-          x: 1350,
+          x: 1920,
           y: 125
         });
       }
